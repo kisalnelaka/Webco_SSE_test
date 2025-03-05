@@ -1,66 +1,124 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Webco SSE Technical Test
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This is my implementation of the Webco Senior Software Engineer technical test. The project demonstrates my approach to building a Laravel-based product management system using modern practices and tools.
 
-## About Laravel
+## Overview
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+I've built a product management system that showcases:
+- Clean, maintainable code following SOLID principles
+- Efficient use of Laravel and Filament Admin
+- Practical implementation of background jobs and API integration
+- Attention to UX/UI details
+- Proper error handling and validation
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tech Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Laravel 10
+- PHP 8.2
+- Filament Admin Panel 3.x
+- SQLite (for simplicity in test environment)
+- Node.js & NPM for asset compilation
 
-## Learning Laravel
+## Getting Started
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+1. Clone and setup:
+```bash
+git clone <repository-url>
+cd webco-sse-test
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+# Install dependencies
+composer install
+npm install
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# Build assets
+npm run build
+```
 
-## Laravel Sponsors
+2. Configure environment:
+```bash
+cp .env.example .env
+php artisan key:generate
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+# Create SQLite database
+touch database/database.sqlite
+```
 
-### Premium Partners
+3. Set up the database:
+```bash
+php artisan migrate
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+4. Start the services:
+```bash
+# Terminal 1: Start the development server
+php artisan serve
 
-## Contributing
+# Terminal 2: Start the queue worker for background jobs
+php artisan queue:work
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+The admin panel should now be accessible at `http://localhost:8000/webco-admin`
 
-## Code of Conduct
+## Implementation Details
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Key Features
+- Product management with color and category organization
+- Address validation with status tracking
+- Background job processing for long-running tasks
+- Real-time dashboard metrics
+- Responsive admin interface with custom theme
 
-## Security Vulnerabilities
+### Code Organization
+```
+app/
+├── Filament/           # Admin panel components
+│   └── WebcoAdmin/     # Custom resources and widgets
+├── Jobs/               # Background job handlers
+├── Models/             # Eloquent models with relationships
+└── Providers/          # Service providers and configuration
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Design Decisions
+
+1. **SQLite Database**: Chose SQLite for easy setup and testing. In production, this would typically use MySQL/PostgreSQL.
+
+2. **Background Jobs**: Implemented queue-based processing to handle time-consuming tasks without blocking the UI.
+
+3. **Address Validation**: Added retry mechanism and proper error handling for API failures.
+
+4. **Admin Interface**: Customized Filament theme for better UX while maintaining consistency.
+
+## Performance Considerations
+
+- Implemented caching for dashboard metrics
+- Optimized database queries using eager loading
+- Added proper indexing on frequently queried columns
+- Used queue workers for background processing
+
+## Testing
+
+Run the test suite:
+```bash
+php artisan test
+```
+
+## Areas for Improvement
+
+Given more time, I would:
+- Add more comprehensive test coverage
+- Implement real-time updates using Laravel Echo
+- Add batch processing for bulk operations
+- Enhance dashboard with more detailed metrics
+
+## Notes
+
+- The project uses database queue driver for simplicity. In production, I'd recommend Redis/Horizon
+- API credentials should be properly configured in `.env` for address validation
+- Cache can be cleared with `php artisan cache:clear` if needed
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This is a technical test implementation. Code structure and patterns can be reused, but the implementation is specific to the test requirements.
+
+---
+Built by [Your Name] using Laravel & Filament
