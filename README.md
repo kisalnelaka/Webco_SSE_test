@@ -24,7 +24,7 @@ I've built a product management system that showcases:
 1. Clone and setup:
 ```bash
 git clone https://github.com/kisalnelaka/Webco_SSE_test.git
-cd webco-sse-test
+cd Webco_SSE_test
 
 # Install dependencies
 composer install
