@@ -12,6 +12,10 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\Actions\Action;
+use Illuminate\Support\Facades\Http;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
 
 class ProductTypeResource extends Resource
 {
@@ -22,13 +26,18 @@ class ProductTypeResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Textarea::make('description')
-                    ->maxLength(65535),
-            ]);
+        ->schema([
+            TextInput::make('name')->required(),
+            TextInput::make('api_unique_number')
+                ->suffixAction(
+                    action: Action::make('fetchApi')
+                        ->action(function ($set) {
+                            $response = Http::withToken('your-api-token')
+                                ->get('https://api.example.com/unique-number');
+                            $set('api_unique_number', $response->json('number'));
+                        })
+                ),
+        ]);
     }
 
     public static function table(Table $table): Table
