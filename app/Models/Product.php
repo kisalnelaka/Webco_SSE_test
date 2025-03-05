@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    protected $fillable = ['name', 'description', 'product_color_id'];
+    protected $fillable = ['name', 'description', 'product_color_id', 'category_id', 'address', 'address_status'];
 
     public function color()
     {
@@ -20,11 +20,6 @@ class Product extends Model
 
     public function categories()
     {
-        return $this->belongsToMany(ProductCategory::class, 'product_category')->whereIn('id', function ($query) {
-            $query->select('categorizable_id')
-                ->from('category_type')
-                ->whereIn('product_type_id', $this->productTypes->pluck('id'))
-                ->where('categorizable_type', ProductCategory::class);
-        });
+        return $this->belongsTo(ProductCategory::class, 'category_id');
     }
 }

@@ -2,9 +2,9 @@
 
 namespace App\Filament\WebcoAdmin\Resources;
 
-use App\Filament\WebcoAdmin\Resources\ProductColorResource\Pages;
-use App\Filament\WebcoAdmin\Resources\ProductColorResource\RelationManagers;
-use App\Models\ProductColor;
+use App\Filament\WebcoAdmin\Resources\ProductTypeResource\Pages;
+use App\Filament\WebcoAdmin\Resources\ProductTypeResource\RelationManagers;
+use App\Models\ProductType;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,17 +13,17 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class ProductColorResource extends Resource
+class ProductTypeResource extends Resource
 {
-    protected static ?string $model = ProductColor::class;
+    protected static ?string $model = ProductType::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-swatch';
+    protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
 
-    protected static ?string $navigationLabel = 'Colors';
+    protected static ?string $navigationLabel = 'Types';
 
-    protected static ?string $modelLabel = 'Color';
+    protected static ?string $modelLabel = 'Type';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 5;
 
     public static function form(Form $form): Form
     {
@@ -32,15 +32,9 @@ class ProductColorResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('hex_code')
-                    ->label('Hex code')
-                    ->required()
-                    ->maxLength(7)
-                    ->placeholder('#000000')
-                    ->regex('/^#[0-9A-Fa-f]{6}$/'),
-                Forms\Components\Textarea::make('description')
-                    ->maxLength(65535)
-                    ->columnSpanFull(),
+                Forms\Components\TextInput::make('bonus')
+                    ->numeric()
+                    ->required(),
             ]);
     }
 
@@ -50,8 +44,9 @@ class ProductColorResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('hex_code')
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('bonus')
+                    ->numeric()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -85,9 +80,9 @@ class ProductColorResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListProductColors::route('/'),
-            'create' => Pages\CreateProductColor::route('/create'),
-            'edit' => Pages\EditProductColor::route('/{record}/edit'),
+            'index' => Pages\ListProductTypes::route('/'),
+            'create' => Pages\CreateProductType::route('/create'),
+            'edit' => Pages\EditProductType::route('/{record}/edit'),
         ];
     }
 }

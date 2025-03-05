@@ -2,9 +2,9 @@
 
 namespace App\Filament\WebcoAdmin\Resources;
 
-use App\Filament\WebcoAdmin\Resources\ProductColorResource\Pages;
-use App\Filament\WebcoAdmin\Resources\ProductColorResource\RelationManagers;
-use App\Models\ProductColor;
+use App\Filament\WebcoAdmin\Resources\ProductCategoryResource\Pages;
+use App\Filament\WebcoAdmin\Resources\ProductCategoryResource\RelationManagers;
+use App\Models\ProductCategory;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,17 +13,17 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class ProductColorResource extends Resource
+class ProductCategoryResource extends Resource
 {
-    protected static ?string $model = ProductColor::class;
+    protected static ?string $model = ProductCategory::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-swatch';
+    protected static ?string $navigationIcon = 'heroicon-o-tag';
 
-    protected static ?string $navigationLabel = 'Colors';
+    protected static ?string $navigationLabel = 'Categories';
 
-    protected static ?string $modelLabel = 'Color';
+    protected static ?string $modelLabel = 'Category';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
@@ -32,12 +32,6 @@ class ProductColorResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('hex_code')
-                    ->label('Hex code')
-                    ->required()
-                    ->maxLength(7)
-                    ->placeholder('#000000')
-                    ->regex('/^#[0-9A-Fa-f]{6}$/'),
                 Forms\Components\Textarea::make('description')
                     ->maxLength(65535)
                     ->columnSpanFull(),
@@ -49,8 +43,6 @@ class ProductColorResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('hex_code')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -85,9 +77,9 @@ class ProductColorResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListProductColors::route('/'),
-            'create' => Pages\CreateProductColor::route('/create'),
-            'edit' => Pages\EditProductColor::route('/{record}/edit'),
+            'index' => Pages\ListProductCategories::route('/'),
+            'create' => Pages\CreateProductCategory::route('/create'),
+            'edit' => Pages\EditProductCategory::route('/{record}/edit'),
         ];
     }
 }

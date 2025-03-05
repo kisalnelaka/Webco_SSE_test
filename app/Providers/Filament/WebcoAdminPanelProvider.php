@@ -23,10 +23,13 @@ class WebcoAdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
+            ->default()
             ->id('webco-admin')
             ->path('webco-admin')
+            ->login()
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Cyan,
+                'gray' => Color::Slate,
             ])
             ->discoverResources(in: app_path('Filament/WebcoAdmin/Resources'), for: 'App\\Filament\\WebcoAdmin\\Resources')
             ->discoverPages(in: app_path('Filament/WebcoAdmin/Pages'), for: 'App\\Filament\\WebcoAdmin\\Pages')
@@ -37,6 +40,7 @@ class WebcoAdminPanelProvider extends PanelProvider
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
+                \App\Filament\WebcoAdmin\Widgets\ProductStatsWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
