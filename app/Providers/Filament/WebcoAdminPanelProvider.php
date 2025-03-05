@@ -23,19 +23,18 @@ class WebcoAdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->default()
             ->id('webco-admin')
             ->path('webco-admin')
-            ->login()
             ->colors([
                 'primary' => Color::Amber,
             ])
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            ->theme(asset('css/filament/admin/theme.css'))
+            ->discoverResources(in: app_path('Filament/WebcoAdmin/Resources'), for: 'App\\Filament\\WebcoAdmin\\Resources')
+            ->discoverPages(in: app_path('Filament/WebcoAdmin/Pages'), for: 'App\\Filament\\WebcoAdmin\\Pages')
             ->pages([
                 Pages\Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            ->discoverWidgets(in: app_path('Filament/WebcoAdmin/Widgets'), for: 'App\\Filament\\WebcoAdmin\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
