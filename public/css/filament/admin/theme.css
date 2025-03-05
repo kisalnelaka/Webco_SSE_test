@@ -19,7 +19,7 @@
 }
 
 .fi-sidebar {
-    @apply bg-white border-r border-gray-200;
+    @apply bg-amber-50 border-r border-amber-100;
 }
 
 .fi-main {
