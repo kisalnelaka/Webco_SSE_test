@@ -23,7 +23,7 @@ I've built a product management system that showcases:
 
 1. Clone and setup:
 ```bash
-git clone <repository-url>
+git clone https://github.com/kisalnelaka/Webco_SSE_test.git
 cd webco-sse-test
 
 # Install dependencies
@@ -95,6 +95,20 @@ app/
 - Added proper indexing on frequently queried columns
 - Used queue workers for background processing
 
+## Bug Fixes and Known Issues
+
+### Recent Bug Fixes
+- Fixed missing `typeables` table for product type relationships
+- Resolved duplicate column issue in `address_status` migration
+- Fixed polymorphic relationship configuration in Product model
+- Addressed Livewire component rendering issues
+- Optimized page load times for product listing
+
+### Known Issues
+- High load times (~15s) on individual product views - under investigation
+- Intermittent Livewire update delays (~2-3s) - performance optimization in progress
+- CSS asset loading optimization needed (currently ~500ms in some cases)
+
 ## Testing
 
 Run the test suite:
@@ -109,12 +123,20 @@ Given more time, I would:
 - Implement real-time updates using Laravel Echo
 - Add batch processing for bulk operations
 - Enhance dashboard with more detailed metrics
+- Optimize asset loading and caching strategies
+- Implement proper error logging and monitoring
 
 ## Notes
 
 - The project uses database queue driver for simplicity. In production, I'd recommend Redis/Horizon
 - API credentials should be properly configured in `.env` for address validation
 - Cache can be cleared with `php artisan cache:clear` if needed
+- For development, ensure proper file permissions on storage and bootstrap/cache directories
+
+## Repository
+
+- GitHub: [https://github.com/kisalnelaka/Webco_SSE_test](https://github.com/kisalnelaka/Webco_SSE_test)
+- Language Stats: PHP (53.1%), Blade (46.0%), Other (0.9%)
 
 ## License
 
