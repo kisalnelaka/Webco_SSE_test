@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Filament\WebcoAdmin\Resources\ProductColorResource\Pages;
 
 use App\Filament\WebcoAdmin\Resources\ProductColorResource;

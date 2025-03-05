@@ -28,7 +28,6 @@ class WebcoAdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
-            ->theme(asset('css/filament/admin/theme.css'))
             ->discoverResources(in: app_path('Filament/WebcoAdmin/Resources'), for: 'App\\Filament\\WebcoAdmin\\Resources')
             ->discoverPages(in: app_path('Filament/WebcoAdmin/Pages'), for: 'App\\Filament\\WebcoAdmin\\Pages')
             ->pages([
