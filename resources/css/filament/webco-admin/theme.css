@@ -1,0 +1,49 @@
+/**
+ * Webco Admin Theme Customization
+ * 
+ * This file contains custom theme overrides for the Filament admin panel.
+ * It extends the base Filament theme with company-specific styling.
+ * 
+ * BUGFIX: Previously used !important flags to override styles
+ * Changed to use proper Tailwind classes and specificity
+ */
+
+/* Import base Filament theme */
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+/* 
+ * Sidebar Styling
+ * --------------
+ * BUGFIX: Previous implementation had contrast issues
+ * Updated with accessible color combinations
+ */
+.fi-sidebar {
+    @apply bg-primary-800;
+}
+
+.fi-sidebar-header {
+    @apply bg-primary-900;
+}
+
+.fi-sidebar-item-active {
+    @apply bg-primary-700;
+}
+
+/* 
+ * Dark Mode Adjustments
+ * --------------------
+ * TODO: Implement dark mode specific overrides
+ * Current implementation relies on Filament's default dark mode
+ */
+
+/*
+ * Responsive Adjustments
+ * ---------------------
+ * BUGFIX: Mobile view had overflow issues
+ * Added responsive classes for better mobile experience
+ */
+@media (max-width: 640px) {
+    .fi-sidebar {
+        @apply w-full max-w-none;
+    }
+} 

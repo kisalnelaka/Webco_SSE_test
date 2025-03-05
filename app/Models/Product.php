@@ -3,23 +3,39 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Product extends Model
 {
-    protected $fillable = ['name', 'description', 'product_color_id', 'category_id', 'address', 'address_status'];
+    protected $fillable = [
+        'name',
+        'description',
+        'address',
+        'address_status',
+        'product_color_id',
+        'category_id',
+        'is_processed',
+        'processed_at'
+    ];
 
-    public function color()
+    protected $casts = [
+        'is_processed' => 'boolean',
+        'processed_at' => 'datetime',
+    ];
+
+    public function color(): BelongsTo
     {
         return $this->belongsTo(ProductColor::class, 'product_color_id');
     }
 
-    public function productTypes()
+    public function category(): BelongsTo
     {
-        return $this->belongsToMany(ProductType::class, 'product_type');
+        return $this->belongsTo(ProductCategory::class);
     }
 
-    public function categories()
+    public function productTypes(): MorphToMany
     {
-        return $this->belongsTo(ProductCategory::class, 'category_id');
+        return $this->morphToMany(ProductType::class, 'typeable');
     }
 }

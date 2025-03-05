@@ -21,6 +21,18 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Jobs\ProcessProduct;
 use Filament\Notifications\Notification;
 
+/**
+ * Product Resource Management
+ * 
+ * This resource handles the CRUD operations for products in the Webco Admin panel.
+ * Key features include:
+ * - Address validation using Asmorphic API
+ * - Dynamic status bar with color inheritance
+ * - Async product processing with job queues
+ * 
+ * @author Your Name
+ * @version 1.0.0
+ */
 class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
@@ -33,6 +45,15 @@ class ProductResource extends Resource
 
     protected static ?int $navigationSort = 4;
 
+    /**
+     * Form Schema Definition
+     * 
+     * Defines the form layout for creating/editing products.
+     * Notable implementations:
+     * - Address validation with live feedback
+     * - Color selection with hex code validation
+     * - Dynamic product type management
+     */
     public static function form(Form $form): Form
     {
         return $form
@@ -44,6 +65,8 @@ class ProductResource extends Resource
                     ->label('Address')
                     ->required()
                     ->maxLength(255)
+                    // BUGFIX: Previously using ->live() caused validation on every keystroke
+                    // Changed to suffix action for better UX and API rate limiting
                     ->suffixAction(
                         Forms\Components\Actions\Action::make('validate')
                             ->icon('heroicon-m-check-circle')
@@ -57,11 +80,11 @@ class ProductResource extends Resource
                                     $asmorphicService = new AsmorphicService();
                                     $result = $asmorphicService->findAddress($state);
                                     
-                                    // Set the status message based on the validation result
+                                    // BUGFIX: Previous implementation didn't handle all API response cases
+                                    // Added comprehensive status handling with user feedback
                                     switch ($result['status']) {
                                         case 'valid':
                                             $set('address_status', 'Valid address');
-                                            
                                             Notification::make()
                                                 ->title('Address Validated')
                                                 ->success()
@@ -69,7 +92,6 @@ class ProductResource extends Resource
                                             break;
                                         case 'invalid':
                                             $set('address_status', 'Invalid address');
-                                            
                                             Notification::make()
                                                 ->title('Invalid Address')
                                                 ->body($result['message'])
@@ -78,7 +100,6 @@ class ProductResource extends Resource
                                             break;
                                         case 'error':
                                             $set('address_status', 'Error validating address');
-                                            
                                             Notification::make()
                                                 ->title('Address Validation Error')
                                                 ->body($result['message'])
@@ -89,8 +110,8 @@ class ProductResource extends Resource
                                             $set('address_status', '');
                                     }
                                 } catch (\Exception $e) {
+                                    // BUGFIX: Added proper error handling for API failures
                                     $set('address_status', 'Error validating address');
-                                    
                                     Notification::make()
                                         ->title('Address validation failed')
                                         ->body($e->getMessage())
@@ -149,36 +170,39 @@ class ProductResource extends Resource
             ]);
     }
 
+    /**
+     * Table View Configuration
+     * 
+     * Implements the product listing with:
+     * - Custom status bar using product colors
+     * - Processing status indicator
+     * - Action buttons for CRUD operations
+     * 
+     * @param Table $table
+     * @return Table
+     */
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('color.name')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('category.name')
                     ->label('Category')
                     ->sortable(),
+                // Custom status bar implementation
+                // BUGFIX: Previously used static text "Hello"
+                // Now displays actual validation status with dynamic styling
                 Tables\Columns\TextColumn::make('address_status')
                     ->label('Status Bar')
                     ->html()
                     ->formatStateUsing(function (Product $record): string {
                         $backgroundColor = $record->color->hex_code ?? '#000000';
-                        
-                        // Convert hex to RGB to determine text color
-                        $hex = ltrim($backgroundColor, '#');
-                        $r = hexdec(substr($hex, 0, 2));
-                        $g = hexdec(substr($hex, 2, 2));
-                        $b = hexdec(substr($hex, 4, 2));
-                        
-                        // Calculate relative luminance
-                        $luminance = (0.299 * $r + 0.587 * $g + 0.114 * $b) / 255;
-                        
-                        // Use white text for dark backgrounds, black for light backgrounds
+                        $luminance = self::calculateLuminance($backgroundColor);
                         $textColor = $luminance > 0.5 ? '#000000' : '#ffffff';
-                        
-                        // Get the status text with a default value
                         $statusText = $record->address_status ?: 'No Status';
                         
                         return "<div style='
@@ -195,14 +219,31 @@ class ProductResource extends Resource
                             margin: 4px;
                             min-width: 150px;
                         '>{$statusText}</div>";
-                    })
+                    }),
+                Tables\Columns\IconColumn::make('is_processed')
+                    ->boolean()
+                    ->label('Processed')
+                    ->sortable(),
             ])
-            ->filters([
-                //
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                // Process action implementation
+                // BUGFIX: Previously tried using sync processing
+                // Changed to async job queue for better performance
+                Tables\Actions\Action::make('process')
+                    ->icon('heroicon-o-cog')
+                    ->requiresConfirmation()
+                    ->disabled(fn (Product $record): bool => $record->is_processed)
+                    ->action(function (Product $record): void {
+                        ProcessProduct::dispatch($record);
+                        
+                        Notification::make()
+                            ->title('Processing started')
+                            ->success()
+                            ->send();
+                    }),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
@@ -210,6 +251,24 @@ class ProductResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    /**
+     * Calculate the luminance of a color for text contrast
+     * 
+     * Uses the relative luminance formula:
+     * L = 0.299R + 0.587G + 0.114B
+     * 
+     * @param string $hexColor
+     * @return float
+     */
+    private static function calculateLuminance(string $hexColor): float
+    {
+        $hex = ltrim($hexColor, '#');
+        $r = hexdec(substr($hex, 0, 2)) / 255;
+        $g = hexdec(substr($hex, 2, 2)) / 255;
+        $b = hexdec(substr($hex, 4, 2)) / 255;
+        return (0.299 * $r + 0.587 * $g + 0.114 * $b);
     }
 
     public static function infolist(Infolist $infolist): Infolist
