@@ -57,7 +57,12 @@ php artisan serve
 php artisan queue:work
 ```
 
-The admin panel should now be accessible at `http://localhost:8000/webco-admin`
+5. Access the admin panel:
+```
+URL: http://localhost:8000/webco-admin
+Email: admin@example.com
+Password: password
+```
 
 ## Implementation Details
 
