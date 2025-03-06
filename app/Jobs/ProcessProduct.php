@@ -65,9 +65,13 @@ class ProcessProduct implements ShouldQueue
         sleep(2);
         
         try {
+            // Validate address format
+            $isValidAddress = $this->validateAddress($this->product->address);
+
             // Update the product status
             $this->product->update([
                 'is_processed' => true,
+                'address_status' => $isValidAddress ? 'validated' : 'invalid',
                 'processed_at' => now(),
             ]);
 
@@ -86,6 +90,13 @@ class ProcessProduct implements ShouldQueue
             // Re-throw to trigger job failure
             throw $e;
         }
+    }
+
+    protected function validateAddress(string $address): bool
+    {
+        // Address format: NUMBER STREET NAME, SUBURB, STATE
+        $pattern = '/^\d+\s+[A-Z\s]+,\s+[A-Z\s]+,\s+[A-Z]{2,3}$/';
+        return preg_match($pattern, $address) === 1;
     }
 
     /**

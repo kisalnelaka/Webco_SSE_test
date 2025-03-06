@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Http\Middleware\AdminMiddleware;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -25,9 +26,10 @@ class WebcoAdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
-            ->id('webco-admin')
-            ->path('webco-admin')
+            ->id('admin')
+            ->path('admin')
             ->login()
+            ->brandName('Webco Admin')
             ->colors([
                 'primary' => Color::Cyan,
             ])
@@ -52,6 +54,7 @@ class WebcoAdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                AdminMiddleware::class,
             ]);
     }
 }
