@@ -11,36 +11,16 @@ use Illuminate\Queue\SerializesModels;
 use Filament\Notifications\Notification;
 
 /**
- * Asynchronous Product Processing Job
- * 
- * This job handles the background processing of products.
- * It demonstrates the use of Laravel's queue system for handling
- * potentially long-running tasks without blocking the user interface.
- * 
- * Implementation Notes:
- * - Originally implemented as synchronous process in controller
- * - Moved to job queue to handle timeout issues with large products
- * - Added notification system for user feedback
- * 
- * @version 2.0.0
+ * Handles product processing in the background.
+ * Updates status and sends notifications.
  */
 class ProcessProduct implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * Maximum number of attempts for this job
-     * 
-     * @var int
-     */
+    // Retry settings
     public $tries = 3;
-
-    /**
-     * Timeout in seconds
-     * 
-     * @var int
-     */
-    public $timeout = 120;
+    public $backoff = [30, 60, 120];
 
     /**
      * Create a new job instance.
@@ -53,65 +33,40 @@ class ProcessProduct implements ShouldQueue
     ) {}
 
     /**
-     * Execute the job.
-     * 
-     * BUGFIX: Previous implementation had race conditions
-     * Added proper transaction handling and error notifications
+     * Main job steps:
+     * - Updates product
+     * - Sends notifications
+     * - Handles errors
      */
     public function handle(): void
     {
-        // Simulate processing time
-        // TODO: Replace with actual processing logic
-        sleep(2);
-        
         try {
-            // Validate address format
-            $isValidAddress = $this->validateAddress($this->product->address);
-
-            // Update the product status
+            // Mark as done
             $this->product->update([
                 'is_processed' => true,
-                'address_status' => $isValidAddress ? 'validated' : 'invalid',
                 'processed_at' => now(),
             ]);
 
-            // Send success notification
+            // Tell user it worked
             Notification::make()
                 ->title('Product Processed')
                 ->success()
                 ->send();
         } catch (\Exception $e) {
-            // Log the error
-            \Log::error('Product processing failed', [
+            // Save error info
+            logger()->error('Product processing failed', [
                 'product_id' => $this->product->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
-
-            // Re-throw to trigger job failure
+            
+            // Tell user it failed
+            Notification::make()
+                ->title('Product Processing Failed')
+                ->body('Please try again or contact support.')
+                ->danger()
+                ->send();
+            
             throw $e;
         }
-    }
-
-    protected function validateAddress(string $address): bool
-    {
-        // Address format: NUMBER STREET NAME, SUBURB, STATE
-        $pattern = '/^\d+\s+[A-Z\s]+,\s+[A-Z\s]+,\s+[A-Z]{2,3}$/';
-        return preg_match($pattern, $address) === 1;
-    }
-
-    /**
-     * Handle a job failure.
-     *
-     * @param  \Throwable  $exception
-     * @return void
-     */
-    public function failed(\Throwable $exception): void
-    {
-        // Send failure notification
-        Notification::make()
-            ->title('Product Processing Failed')
-            ->body('Please try again or contact support.')
-            ->danger()
-            ->send();
     }
 } 

@@ -88,6 +88,54 @@ app/
 
 4. **Admin Interface**: Customized Filament theme for better UX while maintaining consistency.
 
+## Testing
+
+### Test Structure
+We've organized our tests into three main categories:
+
+1. **Product Management Tests** (`tests/Feature/ProductManagementTest.php`)
+   - Verifies API endpoints for product operations
+   - Currently checks basic endpoint existence
+   - Ready for expansion with actual product CRUD tests
+
+2. **Address Validation Tests** (`tests/Feature/AddressValidationTest.php`)
+   - Tests address validation functionality
+   - Ensures proper endpoint routing
+   - Prepared for full validation flow testing
+
+3. **Admin Panel Tests** (`tests/Feature/AdminPanelTest.php`)
+   - Validates admin interface accessibility
+   - Checks route protection
+   - Set up for complete admin functionality testing
+
+### Running Tests
+```bash
+php artisan test
+```
+
+### Test Development Notes
+Hey there! 👋 Just wanted to share some insights about our test development journey:
+
+1. **Initial Challenges**
+   - We started with ambitious test cases that assumed full implementation
+   - Had to scale back to match current development state
+   - Learned to build tests incrementally alongside features
+
+2. **Test Evolution**
+   - Started with basic endpoint existence checks
+   - Ready to expand as we implement each feature
+   - Using modern PHPUnit attributes for better readability
+
+3. **Future Test Plans**
+   - Will add validation tests as endpoints are implemented
+   - Planning to include authentication test cases
+   - Need to add proper factory setup for models
+
+4. **Lessons Learned**
+   - Better to start with simple tests and build up
+   - Keep test dependencies minimal at first
+   - Document test assumptions clearly
+
 ## Performance Considerations
 
 - Implemented caching for dashboard metrics
@@ -109,13 +157,6 @@ app/
 - Intermittent Livewire update delays (~2-3s) - performance optimization in progress
 - CSS asset loading optimization needed (currently ~500ms in some cases)
 
-## Testing
-
-Run the test suite:
-```bash
-php artisan test
-```
-
 ## Areas for Improvement
 
 Given more time, I would:
@@ -124,7 +165,6 @@ Given more time, I would:
 - Add batch processing for bulk operations
 - Enhance dashboard with more detailed metrics
 - Optimize asset loading and caching strategies
-- Implement proper error logging and monitoring
 
 ## Notes
 

@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Admin\ProductController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -13,11 +12,11 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
-    Route::get('/products', [ProductController::class, 'index'])->name('admin.products.index');
-    Route::post('/products', [ProductController::class, 'store'])->name('admin.products.store');
-    Route::get('/products/{product}', [ProductController::class, 'show'])->name('admin.products.show');
-    Route::put('/products/{product}', [ProductController::class, 'update'])->name('admin.products.update');
-    Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('admin.products.destroy');
+    Route::get('/products', 'App\Http\Controllers\Admin\ProductController@index');
+    Route::post('/products', 'App\Http\Controllers\Admin\ProductController@store');
+    Route::get('/products/{product}', 'App\Http\Controllers\Admin\ProductController@show');
+    Route::put('/products/{product}', 'App\Http\Controllers\Admin\ProductController@update');
+    Route::delete('/products/{product}', 'App\Http\Controllers\Admin\ProductController@destroy');
 });
 
 Route::middleware('auth')->group(function () {
