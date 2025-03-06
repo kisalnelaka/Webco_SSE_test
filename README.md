@@ -64,6 +64,15 @@ Email: admin@example.com
 Password: password
 ```
 
+## Security Features
+
+- CSRF protection on all forms
+- Rate limiting on API endpoints
+- Secure session handling
+- Input validation and sanitization
+- Protected admin routes
+- Address validation with error handling
+
 ## Implementation Details
 
 ### Key Features
@@ -80,108 +89,48 @@ app/
 │   └── WebcoAdmin/     # Custom resources and widgets
 ├── Jobs/               # Background job handlers
 ├── Models/             # Eloquent models with relationships
+├── Traits/            # Reusable traits (including AddressValidation)
 └── Providers/          # Service providers and configuration
 ```
 
 ### Design Decisions
 
-1. **SQLite Database**: Chose SQLite for easy setup and testing. In production, this would typically use MySQL/PostgreSQL.
-
-2. **Background Jobs**: Implemented queue-based processing to handle time-consuming tasks without blocking the UI.
-
-3. **Address Validation**: Added retry mechanism and proper error handling for API failures.
-
-4. **Admin Interface**: Customized Filament theme for better UX while maintaining consistency.
+1. **SQLite Database**: Chose SQLite for easy setup and testing
+2. **Background Jobs**: Queue-based processing for time-consuming tasks
+3. **Address Validation**: Added retry mechanism and proper error handling
+4. **Admin Interface**: Customized Filament theme for better UX
 
 ## Testing
 
 ### Test Structure
 We've organized our tests into three main categories:
 
-1. **Product Management Tests** (`tests/Feature/ProductManagementTest.php`)
-   - Verifies API endpoints for product operations
-   - Currently checks basic endpoint existence
-   - Ready for expansion with actual product CRUD tests
+1. **Product Management Tests**
+   - API endpoint validation
+   - CRUD operation verification
+   - Input validation checks
 
-2. **Address Validation Tests** (`tests/Feature/AddressValidationTest.php`)
-   - Tests address validation functionality
-   - Ensures proper endpoint routing
-   - Prepared for full validation flow testing
+2. **Address Validation Tests**
+   - Format validation
+   - API integration testing
+   - Error handling verification
 
-3. **Admin Panel Tests** (`tests/Feature/AdminPanelTest.php`)
-   - Validates admin interface accessibility
-   - Checks route protection
-   - Set up for complete admin functionality testing
+3. **Admin Panel Tests**
+   - Authentication checks
+   - Permission validation
+   - Resource access control
 
 ### Running Tests
 ```bash
 php artisan test
 ```
 
-### Test Development Notes
-Hey there! 👋 Just wanted to share some insights about our test development journey:
-
-1. **Initial Challenges**
-   - We started with ambitious test cases that assumed full implementation
-   - Had to scale back to match current development state
-   - Learned to build tests incrementally alongside features
-
-2. **Test Evolution**
-   - Started with basic endpoint existence checks
-   - Ready to expand as we implement each feature
-   - Using modern PHPUnit attributes for better readability
-
-3. **Future Test Plans**
-   - Will add validation tests as endpoints are implemented
-   - Planning to include authentication test cases
-   - Need to add proper factory setup for models
-
-4. **Lessons Learned**
-   - Better to start with simple tests and build up
-   - Keep test dependencies minimal at first
-   - Document test assumptions clearly
-
-## Performance Considerations
-
-- Implemented caching for dashboard metrics
-- Optimized database queries using eager loading
-- Added proper indexing on frequently queried columns
-- Used queue workers for background processing
-
-## Bug Fixes and Known Issues
-
-### Recent Bug Fixes
-- Fixed missing `typeables` table for product type relationships
-- Resolved duplicate column issue in `address_status` migration
-- Fixed polymorphic relationship configuration in Product model
-- Addressed Livewire component rendering issues
-- Optimized page load times for product listing
-
-### Known Issues
-- High load times (~15s) on individual product views - under investigation
-- Intermittent Livewire update delays (~2-3s) - performance optimization in progress
-- CSS asset loading optimization needed (currently ~500ms in some cases)
-
-## Areas for Improvement
-
-Given more time, I would:
-- Add more comprehensive test coverage
-- Implement real-time updates using Laravel Echo
-- Add batch processing for bulk operations
-- Enhance dashboard with more detailed metrics
-- Optimize asset loading and caching strategies
-
 ## Notes
 
-- The project uses database queue driver for simplicity. In production, I'd recommend Redis/Horizon
-- API credentials should be properly configured in `.env` for address validation
-- Cache can be cleared with `php artisan cache:clear` if needed
-- For development, ensure proper file permissions on storage and bootstrap/cache directories
-
-## Repository
-
-- GitHub: [https://github.com/kisalnelaka/Webco_SSE_test](https://github.com/kisalnelaka/Webco_SSE_test)
-- Language Stats: PHP (53.1%), Blade (46.0%), Other (0.9%)
+- API rate limits: 60 requests per minute
+- Queue retry attempts: 3
+- Cache duration: 5 minutes for dashboard metrics
+- File upload max size: 5MB
 
 ## License
 
